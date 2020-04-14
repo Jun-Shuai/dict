@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/text"
+        android:id="@+id/tv_word"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hello"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        style="@style/text"
+        android:gravity="center"
+        android:id="@+id/tv_translate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="你好"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        style="@style/text"
+        android:gravity="center"
+        android:id="@+id/tv_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_gravity="center"
+        android:id="@+id/btn_play_music"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/music"
+        android:layout_marginTop="20dp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:text="认识"
+            android:id="@+id/btn_known"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:gravity="center"
+            android:text="模糊"
+            android:id="@+id/btn_unknown"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"/>
+
+        <TextView
+            android:text="陌生"
+            android:id="@+id/btn_vague"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

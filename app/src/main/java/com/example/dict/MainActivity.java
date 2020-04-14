@@ -1,28 +1,33 @@
 package com.example.dict;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-
 import android.Manifest;
+import android.app.DirectAction;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+
 import com.example.dict.adapter.DictAdapter;
 import com.example.dict.databinding.ActivityMainBinding;
-import com.example.dict.databinding.ListDictBinding;
-import com.example.dict.model.WordModel;
+import com.example.dict.model.MainViewModel;
 import com.example.dict.retrofit.json.DictJson;
 import com.example.dict.retrofit.params.Dict;
 import com.example.dict.retrofit.IRetrofit;
@@ -30,11 +35,8 @@ import com.example.dict.room.AppDataBase;
 import com.example.dict.room.entity.Word;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
@@ -53,18 +55,18 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDataBase mDataBase;
     private ActivityMainBinding mView;
-    private WordModel mViewModel;
+    private MainViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mView = ActivityMainBinding.inflate(LayoutInflater.from(this));
-        mViewModel = new ViewModelProvider(getViewModelStore(), new ViewModelProvider.NewInstanceFactory()).get(WordModel.class);
+        mViewModel = new ViewModelProvider(getViewModelStore(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
         setContentView(mView.getRoot());
-        Logger.addLogAdapter(new AndroidLogAdapter());
 
-        String pathRoot = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/";
-        Log.d("TAG",Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/");
+        initEvent();
+
+        Logger.addLogAdapter(new AndroidLogAdapter());
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -77,37 +79,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavController navController = Objects.requireNonNull(navHost).getNavController();
 
         mDataBase = Room.databaseBuilder(getApplicationContext(),
                 AppDataBase.class, "my-database.db")
                 .build();
 
-        List<Word> list = new ArrayList<>();
-        DictAdapter adapter = new DictAdapter(this,list);
-        adapter.setOnItemClickListence((position) -> {
-            String fileName = list.get(position).getMusic();
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            try {
-                mediaPlayer.setDataSource(pathRoot+fileName);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-//                mediaPlayer.setOnCompletionListener(MediaPlayer::release);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-        });
-        mView.recyclerview.setAdapter(adapter);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(RecyclerView.HORIZONTAL);
-        mView.recyclerview.setLayoutManager(llm);
-        PagerSnapHelper helper = new PagerSnapHelper();
-        helper.attachToRecyclerView(mView.recyclerview);
-        mViewModel.getWordListModel().observe(this, (words) -> {
-            list.clear();
-            list.addAll(words);
-            adapter.notifyDataSetChanged();
-        });
+        // 界面跳转
+//        NavDirections action = HomeFragmentDirections.actionHomeFragmentToMineFragment();
+//        Navigation.findNavController(v).navigate(action);
+
 
         Single<List<Word>> single = mDataBase.wordDao().getAll();
         single.subscribeOn(Schedulers.io())
@@ -128,6 +111,14 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void initEvent() {
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home, R.id.nav_add, R.id.nav_love).build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(mView.bottomNav, navController);
     }
 
 

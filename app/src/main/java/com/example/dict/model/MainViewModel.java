@@ -7,7 +7,7 @@ import com.example.dict.room.entity.Word;
 
 import java.util.List;
 
-public class WordModel extends ViewModel {
+public class MainViewModel extends ViewModel {
     MutableLiveData<List<Word>> wordListModel = new MutableLiveData<>();
 
     public MutableLiveData<List<Word>> getWordListModel() {

@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         int text_left = 333;
         int text_right = 5566;
-        mView.textLeft.setText(text_left);
+        mView.textLeft.setText(String.valueOf(text_left));
         mView.textRight.setText("/"+text_right);
 
         // 绘制进度圆环

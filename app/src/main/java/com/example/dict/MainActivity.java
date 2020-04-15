@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     /** 初始化数据 */
     private void ininData() {
         // 创建测试数据
-//        createTestData();
+        createTestData();
         // 加载数据
         // TODO 部分加载，按页加载，预加载
         loadData();
@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createTestData() {
-        Word[] arr = new Word[20];
-        for (int i = 0; i < 20; i++) {
+        Word[] arr = new Word[120];
+        for (int i = 0; i < 120; i++) {
             Word word = new Word();
             word.setUid(i);
             word.setWord("Hello world"+i);

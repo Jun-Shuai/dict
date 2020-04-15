@@ -2,30 +2,17 @@ package com.example.dict;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-import android.Manifest;
-import android.app.DirectAction;
-import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
+
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.View;
 
-import com.example.dict.adapter.DictAdapter;
 import com.example.dict.databinding.ActivityMainBinding;
 import com.example.dict.model.MainViewModel;
 import com.example.dict.retrofit.json.DictJson;
@@ -33,10 +20,8 @@ import com.example.dict.retrofit.params.Dict;
 import com.example.dict.retrofit.IRetrofit;
 import com.example.dict.room.AppDataBase;
 import com.example.dict.room.entity.Word;
-import com.orhanobut.logger.AndroidLogAdapter;
-import com.orhanobut.logger.Logger;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
-import java.util.Objects;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
@@ -56,42 +41,66 @@ public class MainActivity extends AppCompatActivity {
     private AppDataBase mDataBase;
     private ActivityMainBinding mView;
     private MainViewModel mViewModel;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mView = ActivityMainBinding.inflate(LayoutInflater.from(this));
-        mViewModel = new ViewModelProvider(getViewModelStore(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
         setContentView(mView.getRoot());
-
+        mDataBase = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, "my-database.db").build(); // 数据库
+        mViewModel = new ViewModelProvider(getViewModelStore(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class); // viewModel
+        initView();
         initEvent();
+        ininData();
+//        if (ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+//                    Manifest.permission.READ_EXTERNAL_STORAGE)) {//这里可以写个对话框之类的项向用户解释为什么要申请权限，并在对话框的确认键后续再次申请权限
+//            } else {
+//                ActivityCompat.requestPermissions(this,
+//                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,}, 1);
+//            }
+//        }
 
-        Logger.addLogAdapter(new AndroidLogAdapter());
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {//这里可以写个对话框之类的项向用户解释为什么要申请权限，并在对话框的确认键后续再次申请权限
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,}, 1);
-            }
-        }
-
-        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        NavController navController = Objects.requireNonNull(navHost).getNavController();
-
-        mDataBase = Room.databaseBuilder(getApplicationContext(),
-                AppDataBase.class, "my-database.db")
-                .build();
 
 
         // 界面跳转
 //        NavDirections action = HomeFragmentDirections.actionHomeFragmentToMineFragment();
 //        Navigation.findNavController(v).navigate(action);
+    }
 
+    /** 设置界面 */
+    private void initView() {
+        // 设置导航
+        BottomNavigationView navView = findViewById(R.id.bottom_nav);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupWithNavController(navView, navController);
+        // 设置标题
+//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_insert, R.id.nav_love).build();
+//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration); // 设置标题
+    }
+    /** 事件 */
+    private void initEvent() {
+        // Fragment切换事件
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (arguments != null && arguments.getBoolean("showNavBottom")) {
+                mView.bottomNav.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+    /** 初始化数据 */
+    private void ininData() {
+        // 创建测试数据
+//        createTestData();
+        // 加载数据
+        // TODO 部分加载，按页加载，预加载
+        loadData();
+    }
 
+    /** 从数据库加载word数据 */
+    private void loadData() {
         Single<List<Word>> single = mDataBase.wordDao().getAll();
         single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,12 +122,36 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void initEvent() {
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_add, R.id.nav_love).build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(mView.bottomNav, navController);
+    private void createTestData() {
+        Word[] arr = new Word[20];
+        for (int i = 0; i < 20; i++) {
+            Word word = new Word();
+            word.setUid(i);
+            word.setWord("Hello world"+i);
+            word.setPhonogram("hello"+i);
+            word.setWord_tream("小学三年级");
+            word.setMusic("null");
+            arr[i] = word;
+        }
+        Completable completable = mDataBase.wordDao().insertAll(arr);
+        completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("TAG","插入！");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("TAG","插入完成！");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("TAG","插入失败！"+e.getMessage());
+                    }
+                });
     }
 
 
@@ -136,9 +169,8 @@ public class MainActivity extends AppCompatActivity {
         Call<DictJson> call = request.getDict(params); // id in 1..100
         call.enqueue(new Callback<DictJson>() {
             @Override
-            public void onResponse(Call<DictJson> call, Response<DictJson> response) {
-                Log.d("TAG",response.body().getMsg());
-                Logger.d(response.body().getData());
+            public void onResponse(@NonNull Call<DictJson> call, @NonNull Response<DictJson> response) {
+
                 List<DictJson.DataBean> words = response.body().getData();
                 Word[] arr = new Word[words.size()];
                 for (int i = 0; i < arr.length; i++) {

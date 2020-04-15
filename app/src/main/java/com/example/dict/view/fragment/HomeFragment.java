@@ -1,5 +1,7 @@
 package com.example.dict.view.fragment;
 
+import android.graphics.Color;
+import android.graphics.EmbossMaskFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -14,6 +16,10 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.MaskFilterSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +36,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +48,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private DictAdapter adapter;
     private List<Word> words;
     private String sdCardPath;
-    private MainViewModel mViewModel;
 
     public HomeFragment() {
         Log.d("TAG","create HomeFragment！");
@@ -67,7 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         words = new ArrayList<>();
         adapter = new DictAdapter(getContext(), words);
         sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mViewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
+        MainViewModel mViewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
         mViewModel.getWordListModel().observe(requireActivity(), (list) -> {
             this.words.clear();
             this.words.addAll(list);
@@ -82,6 +89,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         mView.recyclerview.setLayoutManager(linearLayoutManager);
         PagerSnapHelper helper = new PagerSnapHelper();
         helper.attachToRecyclerView(mView.recyclerview);
+
+        String text = "0/5566";
+//        SpannableString span = new SpannableString(text);
+//        MaskFilterSpan embossMaskFilterSpan =
+//                new MaskFilterSpan(new EmbossMaskFilter(new float[]{10, 10, 10}, 0.5f, 1, 1));
+//        span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)),0 , text.length(), SPAN_INCLUSIVE_INCLUSIVE);
+//        span.setSpan(embossMaskFilterSpan,0 , text.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        mView.textProgress.setText(text);
     }
 
     private void initEvent() {
@@ -98,7 +113,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 e.printStackTrace();
             }
         });
-
     }
 
     @Override

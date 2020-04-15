@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 必须和navigation中定义的fragmentid一致-->
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/hot"
         android:title="@string/home" />
     <item
-        android:id="@+id/nav_add"
+        android:id="@+id/nav_insert"
         android:icon="@drawable/add"
         android:title="@string/add" />
     <item

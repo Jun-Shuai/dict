@@ -1,12 +1,17 @@
 package com.example.dict.view.fragment;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.EmbossMaskFilter;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
@@ -25,9 +30,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.dict.R;
 import com.example.dict.adapter.DictAdapter;
+import com.example.dict.conf.AppPermission;
 import com.example.dict.databinding.FragmentHomeBinding;
 import com.example.dict.model.MainViewModel;
 import com.example.dict.room.entity.Word;
@@ -35,6 +42,7 @@ import com.example.dict.room.entity.Word;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
@@ -82,6 +90,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         });
     }
 
+    @SuppressLint("SetTextI18n")
     private void initView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
@@ -90,18 +99,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         PagerSnapHelper helper = new PagerSnapHelper();
         helper.attachToRecyclerView(mView.recyclerview);
 
-        String text = "0/5566";
-//        SpannableString span = new SpannableString(text);
-//        MaskFilterSpan embossMaskFilterSpan =
-//                new MaskFilterSpan(new EmbossMaskFilter(new float[]{10, 10, 10}, 0.5f, 1, 1));
-//        span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)),0 , text.length(), SPAN_INCLUSIVE_INCLUSIVE);
-//        span.setSpan(embossMaskFilterSpan,0 , text.length(), SPAN_INCLUSIVE_INCLUSIVE);
-        mView.textProgress.setText(text);
+        int text_left = 333;
+        int text_right = 5566;
+        mView.textLeft.setText(text_left);
+        mView.textRight.setText("/"+text_right);
+
+        // 绘制进度圆环
+        mView.ringProgress.setPercentage(40f);
+        mView.ringProgress.setBgColor(getResources().getColor(R.color.colorAccent));
+        mView.ringProgress.setStartColor(getResources().getColor(R.color.colorPrimary));
+        mView.ringProgress.setEndColor(getResources().getColor(R.color.colorOrigin));
+        mView.ringProgress.setGradient(true);
     }
 
     private void initEvent() {
         // 点击播放音频
         adapter.setOnItemClickListence((position) -> {
+            if (Build.VERSION.SDK_INT >= 23) { // android 6.0
+                if (!requestPermission()) {
+                    Toast.makeText(getContext(), "请允许存储权限！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
             String fileName = words.get(position).getMusic();
             MediaPlayer mediaPlayer = new MediaPlayer();
             try {
@@ -118,5 +137,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
 
+    }
+
+    /** 需要申请文件读取权限（读取存储卡音频文件）*/
+    private static final int TAG_READ_EXTERNAL_STORAGE = 0;
+    private boolean requestPermission() {
+        int flag = ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (flag == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},TAG_READ_EXTERNAL_STORAGE);
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (TAG_READ_EXTERNAL_STORAGE == requestCode) {
+            // 授权通过
+            Log.d("TAG","已获取到权限 -> READ_EXTER NAL_STORAGE");
+        }
     }
 }

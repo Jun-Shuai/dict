@@ -3,17 +3,11 @@ package com.example.dict.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.dict.R;
 import com.example.dict.databinding.ListDictBinding;
 import com.example.dict.room.entity.Word;
-
 import java.util.List;
 
 public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {

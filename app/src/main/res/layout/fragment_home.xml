@@ -1,88 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:viewBindingIgnore="false"
-    android:background="@drawable/blue_to_white"
+    android:background="@color/colorWhite"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragment.HomeFragment">
 
-    <!--背诵进度-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/B5d9A1Pl8n"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="40dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <FrameLayout
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:id="@+id/fresh_layout"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <!--背诵进度-->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_height="match_parent">
 
             <com.example.dict.view.custom.RingView
                 android:id="@+id/ring_progress"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
                 app:circleIsGradient="true"
-                android:layout_marginStart="30dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginLeft="30dp" />
-
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:orientation="vertical"
-            android:layout_marginLeft="30dp">
+                />
 
             <TextView
                 android:id="@+id/text_left"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:textSize="42sp"
                 android:gravity="center"
-                android:text="1234"
-                android:textColor="@color/colorPrimaryDark" />
+                android:layout_marginLeft="30dp"
+                android:text="34%"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textColor="@color/colorPrimaryDark"
+                />
 
-<!--            <TextView-->
-<!--                android:id="@+id/text_right"-->
-<!--                android:layout_width="100dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textSize="18sp"-->
-<!--                android:gravity="center"-->
-<!--                android:text="5560"-->
-<!--                android:textColor="@color/colorGreen" />-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/text"
+                android:textSize="30sp"
+                android:text="3625"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                app:layout_constraintRight_toRightOf="parent"/>
 
-        </LinearLayout>
+            <TextView
+                android:layout_marginTop="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/text"
+                android:textSize="30dp"
+                android:text="5560"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                app:layout_constraintRight_toRightOf="parent"
+                 />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="@drawable/yellow_to_origin"
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/B5d9A1Pl8n"
+        app:layout_constraintTop_toBottomOf="@id/fresh_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
         android:layout_marginBottom="60dp"
         android:overScrollMode="never"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -1,13 +1,13 @@
 package com.example.dict;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
-
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +27,8 @@ import com.example.dict.room.AppDataBase;
 import com.example.dict.room.entity.Word;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
+import java.util.Objects;
+
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
@@ -43,10 +45,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppDataBase mDataBase;
     private ActivityMainBinding mView;
     private MainViewModel mViewModel;
     private NavController navController;
+    private AppDataBase mDataBase;
+
+    public AppDataBase getDataBase() {
+        return mDataBase;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +69,20 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
+        // 数据库
+        mDataBase = Room.databaseBuilder(getApplicationContext(),
+                AppDataBase.class,
+                "my-database.db")
+                .build();
+
         mView = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(mView.getRoot());
-        mDataBase = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, "my-database.db").build(); // 数据库
         mViewModel = new ViewModelProvider(getViewModelStore(), new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class); // viewModel
         initView();
         initEvent();
@@ -118,32 +135,11 @@ public class MainActivity extends AppCompatActivity {
 //        createTestData();
         // 加载数据
         // TODO 部分加载，按页加载，预加载
-        loadData();
+
 //        getDictFromNet();
     }
 
-    /** 从数据库加载word数据 */
-    private void loadData() {
-        Single<List<Word>> single = mDataBase.wordDao().getAll();
-        single.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<Word>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
 
-                    }
-
-                    @Override
-                    public void onSuccess(List<Word> list) {
-                        mViewModel.getWordListModel().postValue(list);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-                });
-    }
 
     private void createTestData() {
         Word[] arr = new Word[120];

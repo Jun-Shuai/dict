@@ -14,6 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {
+
+    public static final int CLICK_TAG_SINGLE = 0;
+    public static final int CLICK_TAG_REPET = 1;
+
+
     private Context mContext;
     private List<Word> mList;
     public DictAdapter(Context ctx, List<Word> list) {
@@ -32,10 +37,14 @@ public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {
     public void onBindViewHolder(@NonNull VH holder, int position) {
         holder.binding.tvWord.setText(mList.get(position).getWord());
         holder.binding.tvTranslate.setText(mList.get(position).getTranslate());
-        holder.binding.btnPlayMusic.setOnClickListener((v -> {
+        holder.binding.btnPlayMusic.setOnClickListener((v) -> {
             Log.d("TAG","onclick"+position);
-            onItemClickListence.onClick(position);
-        }));
+            onItemClickListence.onClick(position, CLICK_TAG_SINGLE);
+        });
+
+        holder.binding.btnReplay.setOnClickListener((v) -> {
+            onItemClickListence.onClick(position, CLICK_TAG_REPET);
+        });
     }
 
     @Override
@@ -57,6 +66,6 @@ public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {
     }
 
     public interface OnItemClickListence {
-        void onClick(int index);
+        void onClick(int index, int tag);
     }
 }

@@ -15,6 +15,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import com.example.dict.databinding.FragmentSplashBinding;
 
+import java.util.Objects;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -35,9 +37,9 @@ public class SplashFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        AlphaAnimation anim = new AlphaAnimation(1f, 0.4f);
+        AlphaAnimation anim = new AlphaAnimation(1f, 0.5f);
         anim.setInterpolator(new AccelerateInterpolator());
-        anim.setDuration(4000);
+        anim.setDuration(2000);
         mView.splashImage.startAnimation(anim);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override

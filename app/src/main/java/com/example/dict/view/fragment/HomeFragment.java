@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
+import static androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE;
 
 
 /**
@@ -101,12 +103,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         int text_left = 333;
         int text_right = 5566;
-        mView.textLeft.setText(String.valueOf(text_left));
-        mView.textRight.setText("/"+text_right);
+        mView.textLeft.setText(String.valueOf("45%"));
+//        mView.textRight.setText("");
 
         // 绘制进度圆环
         mView.ringProgress.setPercentage(40f);
-        mView.ringProgress.setBgColor(getResources().getColor(R.color.colorAccent));
+        mView.ringProgress.setBgColor(getResources().getColor(R.color.colorPrimary));
         mView.ringProgress.setStartColor(getResources().getColor(R.color.colorPrimary));
         mView.ringProgress.setEndColor(getResources().getColor(R.color.colorOrigin));
         mView.ringProgress.setGradient(true);
@@ -138,6 +140,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
 
     }
+
 
     /** 需要申请文件读取权限（读取存储卡音频文件）*/
     private static final int TAG_READ_EXTERNAL_STORAGE = 0;

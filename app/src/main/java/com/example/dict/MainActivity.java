@@ -8,11 +8,16 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 import com.example.dict.databinding.ActivityMainBinding;
 import com.example.dict.model.MainViewModel;
 import com.example.dict.retrofit.json.DictJson;
@@ -46,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        Window window = getWindow();
+        View decorView = window.getDecorView();
+        int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        decorView.setSystemUiVisibility(option);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
+
         mView = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(mView.getRoot());
         mDataBase = Room.databaseBuilder(getApplicationContext(), AppDataBase.class, "my-database.db").build(); // 数据库
@@ -85,18 +102,24 @@ public class MainActivity extends AppCompatActivity {
     private void initEvent() {
         // Fragment切换事件
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if (arguments != null && arguments.getBoolean("showNavBottom")) {
-                mView.bottomNav.setVisibility(View.VISIBLE);
+            if (destination.getId() == R.id.nav_home) { // 切换到首页
+                mView.bottomNav.setVisibility(View.VISIBLE); // 显示底部栏目
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); // 切换非全屏
+            }
+
+            if (destination.getId() == R.id.nav_splash) {
+                Log.d("TAG","打开启动页");
             }
         });
     }
     /** 初始化数据 */
     private void ininData() {
         // 创建测试数据
-        createTestData();
+//        createTestData();
         // 加载数据
         // TODO 部分加载，按页加载，预加载
         loadData();
+//        getDictFromNet();
     }
 
     /** 从数据库加载word数据 */
@@ -127,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 120; i++) {
             Word word = new Word();
             word.setUid(i);
-            word.setWord("Hello world"+i);
+            word.setWord("Helloworld"+i);
             word.setPhonogram("hello"+i);
             word.setWord_tream("小学三年级");
             word.setMusic("null");
@@ -157,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getDictFromNet() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.77:8080/") //设置网络请求的Url地址
+                .baseUrl("http://192.168.1.98:8080/") //设置网络请求的Url地址
                 .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
@@ -202,5 +225,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("TAG",t.toString());
             }
         });
+    }
+
+    private long backTimes = 0;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (System.currentTimeMillis() - backTimes > 1300) {
+                backTimes = System.currentTimeMillis();
+                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.dict.databinding.ListDictBinding;
 import com.example.dict.room.entity.Word;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {
     private Context mContext;
@@ -17,6 +20,7 @@ public class DictAdapter extends RecyclerView.Adapter<DictAdapter.VH> {
         mContext = ctx;
         mList = list;
     }
+
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
